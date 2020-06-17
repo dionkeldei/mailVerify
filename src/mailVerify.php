@@ -428,7 +428,7 @@ class mailVerify {
 										'zw'
 	);
 	
-	public list_generic_domains = array(
+	public $list_generic_domains = array(
 	                                'gmail.com',
 	                                'yahoo.com',
 	                                'yahoo.com.mx',
@@ -439,7 +439,7 @@ class mailVerify {
 	                            	'live.com.mx'
 	                            	);
 
-	public list_no_reply_mails = array(
+	public $list_no_reply_mails = array(
 									'ventas',
 									'admin',
 									'administracion',
@@ -456,29 +456,29 @@ class mailVerify {
 									'office'
 									);
 
-	public notes = [
-       'ampersand' = [
+	public $notes = array(
+       'ampersand' => [
                 'es' => 'No tiene simbolo Ampersand.',
                 'en' => 'Ampersand simbol is missing'
        ],
-       'domain' = [
+       'domain' => [
                 'es' => 'No existe el dominio',
                 'en' => 'Domain not found'
        ],
-       'dot' = [
+       'dot' => [
                 'es' => 'No tiene punto.',
                 'en' => 'Dot not found'
        ],
-       'generic' = [
+       'generic' => [
                 'es' => 'El correo es Correo genérico',
                 'en' => 'Generic email user'
        ],
-       'public' = [
+       'public' => [
                 'es' => 'El correo es de Servidor Público',
                 'en' => 'Public server Email'
        ]
 
-	]
+	);
 	public function __construct($lang = 'es'){
 		$this->lang = $lang;
 	}
@@ -488,7 +488,7 @@ class mailVerify {
 			 $array = [
                 'success' => false,
                 'message' => $this->message('ampersand')
-			 ]
+			 ];
 				return (object) $array;
 		}
 		$record = 'MX';
@@ -497,12 +497,12 @@ class mailVerify {
 		   $array = [
               'success' => true,
               'message' => ''
-		   ]
+		   ];
 		}else{
 		   $array = [
               'success' => false,
-              'message' => $this->message('domain');
-		   ]
+              'message' => $this->message('domain')
+		   ];
 		}
 
 		return (object) $array;
@@ -514,7 +514,7 @@ class mailVerify {
 			 $array = [
                 'success' => false,
                 'message' => $this->message('ampersand')
-			 ]
+			 ];
 				return (object) $array;
 		}else{
 			
@@ -523,8 +523,8 @@ class mailVerify {
 			if(strstr($domain, '.') == FALSE){
 				  $array = [
                     'success' => false,
-                    'message' => $this->message('dot');
-			     ]
+                    'message' => $this->message('dot')
+			     ];
 				return (object) $array;
 			}else{
 				
@@ -534,24 +534,24 @@ class mailVerify {
 				if(strlen($domain_extension) < 2){
 					$array = [
                        'success' => false,
-                       'message' => $this->message('domain');
-			        ]
+                       'message' => $this->message('domain')
+			        ];
 					return (object) $array;
 				}else{
 					if(!in_array($domain_extension, $this->list_domain_extensions)){
 						$array = [
                            'success' => false,
-                           'message' => $this->message('domain');
-			            ]
+                           'message' => $this->message('domain')
+			            ];
 							return (object) $array;
 					}
 				}
 			}
 		}
         $array = [
-              'success' => success,
-              'message' => '';
-		]
+              'success' => true,
+              'message' => ''
+		];
 		return (object) $array;
 	}
 
@@ -560,58 +560,70 @@ class mailVerify {
 	   if(in_array($domain, $this->list_generic_domains)){
           $array = [
              'success' => false,
-             'message' => $this->message('public');
-          ]
+             'message' => $this->message('public')
+          ];
           return (object) $array;
 	   }
 
 	   $array = [
           'success' => true,
           'message' => ''
-	   ]
+	   ];
+	   return (object) $array;
 	}
 
 	public function isNoReply($address_to_verify){
+	   if(strstr($address_to_verify, "@") == FALSE){
+			 $array = [
+                'success' => false,
+                'message' => $this->message('ampersand')
+			 ];
+				return (object) $array;
+		}
 	   list($user, $domain) = explode('@', $address_to_verify);
 	   if(in_array($user, $this->list_no_reply_mails)){
           $array = [
              'success' => false,
-             'message' => $this->message('generic');
-          ]
+             'message' => $this->message('generic')
+          ];
           return (object) $array;
 	   }
 
 	   $array = [
           'success' => true,
           'message' => ''
-	   ]
+	   ];
+	   return (object) $array;
 	}
 
 	public function check_email($mail){
 
-      $isNoReply = $this->isNoReply($mail);
-      if(!$isNoReply->success){
-         return $isNoReply
-      }
-
-      $isGeneric = $this->isGeneric($mail);
-      if(!$isGeneric->success){
-         return $isGeneric
-      }
-
       $verify_formatting = $this->verify_formatting($mail);
       if(!$verify_formatting->success){
-         return $verify_formatting
+         return $verify_formatting;
       }
 
+
+      $isNoReply = $this->isNoReply($mail);
+      if(!$isNoReply->success){
+         return $isNoReply;
+      }
+      
+      $isGeneric = $this->isGeneric($mail);
+      if(!$isGeneric->success){
+         return $isGeneric;
+      }
+      
       $verify_domain = $this->verify_domain($mail);
       if(!$verify_domain->success){
-         return $verify_domain
+         return $verify_domain;
       }
+      
+      return $verify_domain;
 	}
 
 	public function message($message){
-       return $this->notes[$message,$this->lang];
+       return $this->notes[$message][$this->lang];
 	}
 }
 ?>
