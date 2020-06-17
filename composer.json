@@ -1,0 +1,18 @@
+{
+    "name": "dionkeldei/verifymail",
+    "description": "Package to verify if email is real",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Dionkeldei",
+            "email": "dionkeldei@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "mailVerify\\": "src/"
+        }
+    }
+}
