@@ -458,8 +458,8 @@ class mailVerify {
 
 	public $notes = array(
        'ampersand' => [
-                'es' => 'No tiene simbolo Ampersand.',
-                'en' => 'Ampersand simbol is missing'
+                'es' => 'No tiene simbolo @.',
+                'en' => '@ simbol is missing'
        ],
        'domain' => [
                 'es' => 'No existe el dominio',
